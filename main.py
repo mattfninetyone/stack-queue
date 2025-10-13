@@ -42,48 +42,26 @@ class Queue(Protocol[T]):
 
 class MattStack(Generic[T]):
 
-    def __init__(self) -> None:
-        self._items: list[T] = []
+    def __init__(self) -> None:...
 
-    def push(self, item: T) -> None:
-        self._items.append(item)
+    def push(self, item: T) -> None:...
 
-    def pop(self) -> Optional[T]:
-        if self.is_empty():
-            return None
-        return self._items.pop()
+    def pop(self) -> Optional[T]:...
 
-    def peek(self) -> Optional[T]:
-        if self.is_empty():
-            return None
-        return self._items[-1]
+    def peek(self) -> Optional[T]:...
 
-    def is_empty(self) -> bool:
-        return len(self._items) == 0
+    def is_empty(self) -> bool:...
 
 class MattQueue(Generic[T]):
 
-    def __init__(self) -> None:
-        self._items: list[T] = []
+    def __init__(self) -> None:...
 
-    def enqueue(self, item: T) -> None:
-        self._items.append(item)
+    def enqueue(self, item: T) -> None:...
 
-    def dequeue(self) -> Optional[T]:
-        if self.is_empty():
-            return None
-        return self._items.pop(0)
+    def dequeue(self) -> Optional[T]:...
 
-    def peek(self) -> Optional[T]:
-        if self.is_empty():
-            return None
-        return self._items[0]
+    def peek(self) -> Optional[T]:...
 
-    def is_empty(self) -> bool:
-        return len(self._items) == 0
+    def is_empty(self) -> bool:...
 
-# matts = MattStack()
-# matts.push(12)
-# matts.push(13)
-# matts.push(90)
-# print(matts.is_empty())
+
