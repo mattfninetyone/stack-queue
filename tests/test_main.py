@@ -1,15 +1,15 @@
-from main import Stack, Queue, MattStack, MattQueue, T
+from main import Stack, Queue, MattStackArr, MattQueueLink, T
 import pytest
 
 @pytest.fixture
 def stack() -> Stack:
     # create and return a new queue implementation
-    return MattStack()
+    return MattStackArr()
 
 @pytest.fixture
 def queue() -> Queue:
     # create and return a new queue implementation
-    return MattQueue()
+    return MattQueueLink()
 
 # ----- STACK TESTS ----- #
 
@@ -21,7 +21,7 @@ def test_stack_push(stack):
 
     # Assert
     assert not stack.is_empty()
-    assert stack.peek() is item
+    assert stack.peek() == item
 
 
 def test_stack_pop(stack):
@@ -32,7 +32,7 @@ def test_stack_pop(stack):
     popped_item = stack.pop()
 
     # Assert
-    assert popped_item is item
+    assert popped_item == item
     assert stack.is_empty()
 
 def test_stack_peek(stack):
@@ -62,7 +62,8 @@ def test_stack_multi_push(stack):
         stack.push(item)
     # Assert
     assert not stack.is_empty()
-    assert stack.peek() is items[-1]
+    for i in reversed(items):  
+        assert stack.pop() == i
 
 def test_stack_none(stack):
     # Arrange
@@ -70,19 +71,35 @@ def test_stack_none(stack):
     # Act
     
     # Assert
-    assert stack.pop() is None
-    assert stack.peek() is None
+    with pytest.raises(ValueError) as e1:
+        stack.pop()
+    with pytest.raises(ValueError) as e2:
+        stack.peek()
+
+    assert str(e1.value) == "Empty"
+    assert str(e2.value) == "Empty"
 
 def test_stack_multi_op(stack):
-    item_1 = 1
-    item_2 = 2
-    stack.push(item_1)
-    assert stack.peek() is 1
-    assert stack.pop() is 1
-    stack.push(item_1)
-    stack.push(item_2)
-    assert stack.pop() is 2
-    assert queue.pop() is 1
+    for i in range(1,10):
+        stack.push(i)
+    for i in reversed(range(1,10)):
+        assert stack.pop() == i
+
+def test_stack_zero_as_input(stack):
+    item = 0
+
+    stack.push(item)
+
+    assert not stack.is_empty()
+    assert stack.peek() == item
+
+def test_stack_str_as_input(stack):
+    item = "matt"
+
+    stack.push(item)
+
+    assert not stack.is_empty()
+    assert stack.peek() == item
 
 # ----- QUEUE TESTS ----- #
 
@@ -101,7 +118,6 @@ def test_queue_dequeue(queue):
     # Act
     queue.enqueue(item)
     dequeued_item = queue.dequeue()
-
     # Assert
     assert dequeued_item is item
     assert queue.is_empty()
@@ -112,17 +128,11 @@ def test_queue_peek(queue):
     # Act
     queue.enqueue(item)
     front_item = queue.peek()
-
     # Assert
     assert front_item is item
     assert not queue.is_empty()
 
 def test_queue_is_empty(queue):
-    # Arrange
-
-    # Act
-
-    # Assert
     assert queue.is_empty()
 
 def test_queue_multi_push(queue):
@@ -133,27 +143,23 @@ def test_queue_multi_push(queue):
         queue.enqueue(item)
     # Assert
     assert not queue.is_empty()
-    assert queue.peek() is items[-1]
+    for i in items:  
+        assert queue.dequeue() == i
 
 def test_queue_none(queue):
-    # Arrange
+    with pytest.raises(ValueError) as e1:
+        queue.dequeue()
+    with pytest.raises(ValueError) as e2:
+        queue.peek()
 
-    # Act
-    
-    # Assert
-    assert queue.dequeue() is None
-    assert queue.peek() is None
+    assert str(e1.value) == "Empty"
+    assert str(e2.value) == "Empty"
 
 def test_queue_multi_op(queue):
-    item_1 = 1
-    item_2 = 2
-    queue.enqueue(item_1)
-    assert queue.peek() is 1
-    assert queue.dequeue() is 1
-    queue.enqueue(item_1)
-    queue.enqueue(item_2)
-    assert queue.dequeue() is 1
-    assert queue.dequeue() is 2
+    for i in range(10):
+        queue.enqueue(i)
+    for i in range(10):
+        assert queue.dequeue() == i
 
 
 
