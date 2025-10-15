@@ -1,8 +1,10 @@
 from typing import Protocol, TypeVar, Optional, Generic
 import numpy as np
 
+
 T = TypeVar("T")
 
+# PROTOCOLS
 class Stack(Protocol[T]):
     """Protocol for a stack data structure."""
 
@@ -41,75 +43,40 @@ class Queue(Protocol[T]):
         """Return True if the queue is empty."""
         ...
 
-# STACK IMPLEMENTATIONS #
-class MattStackArr(Generic[T]):
-
-    def __init__(self) -> None:
-        self._items = np.zeros(2, dtype=int)
-
-    def push(self, item: T) -> None:
-        open_pos = np.where(self._items == 0)[0]
-        for obj in self._items:
-            open_pos = np.where(self._items == 0)[0]
-            if obj != 0 and open_pos.size == 0:
-                close_pos = np.where(self._items != 0)[0]
-                scale = close_pos.size
-                self._items = np.append(self._items, np.zeros(scale, dtype=int))
-        if open_pos.size > 0:
-            self._items[open_pos[0]] = item
-        
-    def pop(self) -> Optional[T]:
-        if self.is_empty():
-            raise ValueError("Empty")
-        no_zero = np.where(self._items != 0)[0]
-        top = no_zero[-1]
-        popped_value = self._items[top]
-        self._items[top] = 0
-
-        open_pos_after = np.where(self._items == 0)[0]
-        no_zero = np.where(self._items != 0)[0]
-
-        if open_pos_after.size >= no_zero.size and self._items.size > 2:
-            self._items = np.delete(self._items, open_pos_after)
-
-        return popped_value
-
-    def peek(self) -> Optional[T]:
-        if self.is_empty():
-            raise ValueError("Empty")
-        no_zero = np.where(self._items != 0)[0]
-        top = no_zero[-1]
-        return self._items[top]
-    
-    def is_empty(self) -> bool:
-        return np.all(self._items == 0)
+# ----- STACK IMPLEMENTATIONS ----- #
 
 class MattStackArrAll(Generic[T]):
-    """IGNORE THIS: PLACEHOLDER FOR GENERALISED STACK IMPLEMENTATION"""
+
+    _EMPTY = object()
+
     def __init__(self) -> None:
-        self._items = np.zeros(2, dtype=int)
+        self._items = np.empty(2, dtype=object)
+        self._items[:] = self._EMPTY
 
     def push(self, item: T) -> None:
-        open_pos = np.where(self._items == 0)[0]
+        if not self.is_empty() and type(self.peek()) != type(item):
+            raise ValueError("Too Many Types")
+
+        open_pos = np.where(self._items == self._EMPTY)[0]
         for obj in self._items:
-            open_pos = np.where(self._items == 0)[0]
-            if obj != 0 and open_pos.size == 0:
-                close_pos = np.where(self._items != 0)[0]
+            open_pos = np.where(self._items == self._EMPTY)[0]
+            if obj != self._EMPTY and open_pos.size == 0:
+                close_pos = np.where(self._items != self._EMPTY)[0]
                 scale = close_pos.size
-                self._items = np.append(self._items, np.zeros(scale, dtype=int))
+                self._items = np.append(self._items, np.full(scale, self._EMPTY, dtype=object))
         if open_pos.size > 0:
             self._items[open_pos[0]] = item
         
     def pop(self) -> Optional[T]:
         if self.is_empty():
             raise ValueError("Empty")
-        no_zero = np.where(self._items != 0)[0]
+        no_zero = np.where(self._items != self._EMPTY)[0]
         top = no_zero[-1]
         popped_value = self._items[top]
-        self._items[top] = 0
+        self._items[top] = self._EMPTY
 
-        open_pos_after = np.where(self._items == 0)[0]
-        no_zero = np.where(self._items != 0)[0]
+        open_pos_after = np.where(self._items == self._EMPTY)[0]
+        no_zero = np.where(self._items != self._EMPTY)[0]
 
         if open_pos_after.size >= no_zero.size and self._items.size > 2:
             self._items = np.delete(self._items, open_pos_after)
@@ -119,19 +86,21 @@ class MattStackArrAll(Generic[T]):
     def peek(self) -> Optional[T]:
         if self.is_empty():
             raise ValueError("Empty")
-        no_zero = np.where(self._items != 0)[0]
+        no_zero = np.where(self._items != self._EMPTY)[0]
         top = no_zero[-1]
         return self._items[top]
     
     def is_empty(self) -> bool:
-        return np.all(self._items == 0)
+        return np.all(self._items == self._EMPTY)
 
-# QUEUE AND NODE IMPLEMENTATIONS #
+# ----- QUEUE AND NODE IMPLEMENTATIONS ------ #
+# LINKED LIST NODE
 class Node:
     def __init__(self, value):
         self.value = value
         self.next = None
 
+# LINKED LIST
 class MattQueueLink(Generic[T]):
 
     def __init__(self) -> None:
@@ -139,6 +108,9 @@ class MattQueueLink(Generic[T]):
         self.tail = None
 
     def enqueue(self, item: T) -> None:
+        if not self.is_empty() and type(self.peek()) != type(item):
+            raise ValueError("Too Many Types")
+
         new_node = Node(item)
         if self.tail is None:
             self.head = self.tail = new_node
@@ -163,12 +135,14 @@ class MattQueueLink(Generic[T]):
     def is_empty(self) -> bool:
         return self.head is None
 
+# DBL LINKED LIST NODE
 class NodeX2:
     def __init__(self, value):
         self.value = value
         self.next = None
         self.prev = None
 
+# DBL LINKED LIST
 class MattQueueLinkX2(Generic[T]):
 
     def __init__(self) -> None:
@@ -176,6 +150,9 @@ class MattQueueLinkX2(Generic[T]):
         self.tail = None
 
     def enqueue(self, item: T) -> None:
+        if not self.is_empty() and type(self.peek()) != type(item):
+            raise ValueError("Too Many Types")
+
         new_node = NodeX2(item)
         if self.tail is None:
             self.head = self.tail = new_node
@@ -203,39 +180,4 @@ class MattQueueLinkX2(Generic[T]):
     def is_empty(self) -> bool:
         return self.head is None
 
-# def temp_func(num):
-#     matt = MattStackArr()
-#     for i in range(num):
-#         matt.push(1)
-#     # matt.push(2)
-#     #print(matt._items)
-#     print(matt.is_empty())
-#     print(matt._items)
-# temp_func(0)
 
-import time
-q = MattQueueLink()
-
-start = time.time()
-for i in range(10000000):
-    q.enqueue(i)
-end = time.time() - start
-print(f'{end:.5f}s')
-
-# q = MattQueueLinkX2()
-# start = time.time()
-# for i in range(10000000):
-#     q.enqueue(i)
-# end = time.time() - start
-# print(f'{end:.5f}s')
-
-
-
-
-# q.enqueue(10)
-# q.enqueue(20)
-# q.enqueue(30)
-
-# print(q.dequeue())  
-# print(q.peek())     
-# print(q.is_empty()) 
