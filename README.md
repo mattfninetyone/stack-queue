@@ -1,4 +1,4 @@
-# Implementation of Stack and Queue Data Structures
+# Implementation of Stack and Queue Data Structures.
 
 ### Overview 
 - This project provides implementations of stack and queue data structures using various underlying data structures such as a numpy based array for a stack, and singly and doubly linked lists for queues.
