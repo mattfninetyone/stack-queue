@@ -5,7 +5,7 @@ import math
 # FIXTURES
 @pytest.fixture
 def stack() -> Stack:
-    return MattStackArrAll()
+    return MattStackArrAll(object)
 
 @pytest.fixture
 def queue() -> Queue:
@@ -58,7 +58,7 @@ def test_stack_grow(stack):
         stack.push(i)
     assert stack.peek() == val
     assert stack.pop() == val
-    assert stack._items.size == (2 ** (max(1, math.ceil(math.log2(val)))))
+    assert len(stack) == (2 ** (max(1, math.ceil(math.log2(val)))))
 
 # VALUE ERROR ON EMPTY POP/PEEK CASE
 def test_stack_value_error(stack):
