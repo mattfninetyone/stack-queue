@@ -1,7 +1,6 @@
 from typing import Protocol, TypeVar, Optional, Generic
 import numpy as np
 
-
 T = TypeVar("T")
 
 # PROTOCOLS
@@ -49,49 +48,57 @@ class MattStackArrAll(Generic[T]):
 
     _EMPTY = object()
 
-    def __init__(self) -> None:
+    def __init__(self, dt: object) -> None:
+        self._dtype = np.dtype(dt)
         self._items = np.empty(2, dtype=object)
         self._items[:] = self._EMPTY
+        self._length = 0
 
     def push(self, item: T) -> None:
-        if not self.is_empty() and type(self.peek()) != type(item):
+        # Ensuring Type Consistency
+        if not self.is_empty() and not isinstance(item, type(self.peek())):
             raise ValueError("Too Many Types")
+        
+        # Allocating more space
+        if self._items[-1] is not self._EMPTY:
+            # Creating an empty array of the required size
+            old_items = self._items
+            old_size = len(old_items)
+            new_size = old_size * 2 
+            new_items = [self._EMPTY] * new_size
 
-        open_pos = np.where(self._items == self._EMPTY)[0]
-        for obj in self._items:
-            open_pos = np.where(self._items == self._EMPTY)[0]
-            if obj != self._EMPTY and open_pos.size == 0:
-                close_pos = np.where(self._items != self._EMPTY)[0]
-                scale = close_pos.size
-                self._items = np.append(self._items, np.full(scale, self._EMPTY, dtype=object))
-        if open_pos.size > 0:
-            self._items[open_pos[0]] = item
+            # Reallocating old pushes
+            new_items[:old_size] = old_items
+
+            # Re-defining _items with new space
+            self._items = new_items
+
+        # Adding the item
+        idx = len(self)
+        self._items[idx] = item
+
+        # Updating array size tracker
+        self._length += 1
         
     def pop(self) -> Optional[T]:
         if self.is_empty():
             raise ValueError("Empty")
-        no_zero = np.where(self._items != self._EMPTY)[0]
-        top = no_zero[-1]
-        popped_value = self._items[top]
-        self._items[top] = self._EMPTY
-
-        open_pos_after = np.where(self._items == self._EMPTY)[0]
-        no_zero = np.where(self._items != self._EMPTY)[0]
-
-        if open_pos_after.size >= no_zero.size and self._items.size > 2:
-            self._items = np.delete(self._items, open_pos_after)
-
+        idx = len(self) - 1
+        popped_value = self._items[idx]
+        self._items[idx] = self._EMPTY
+        self._length -= 1
         return popped_value
 
     def peek(self) -> Optional[T]:
         if self.is_empty():
             raise ValueError("Empty")
-        no_zero = np.where(self._items != self._EMPTY)[0]
-        top = no_zero[-1]
-        return self._items[top]
+        return self._items[len(self) - 1]
     
-    def is_empty(self) -> bool:
-        return np.all(self._items == self._EMPTY)
+    def is_empty(self) -> bool:    
+        return len(self) == 0
+    
+    def __len__(self) -> int:
+        return self._length
 
 # ----- QUEUE AND NODE IMPLEMENTATIONS ------ #
 # LINKED LIST NODE
@@ -179,5 +186,4 @@ class MattQueueLinkX2(Generic[T]):
 
     def is_empty(self) -> bool:
         return self.head is None
-
 
