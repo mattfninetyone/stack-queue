@@ -33,11 +33,11 @@ class Queue(Protocol[T]):
         """Add an item to the end of the queue."""
         ...
 
-    def dequeue(self) -> Optional[T]:
+    def dequeue(self) -> T:
         """Remove and return the item at the front of the queue."""
         ...
 
-    def peek(self) -> Optional[T]:
+    def peek(self) -> T:
         """Return the front item without removing it."""
         ...
 
@@ -56,12 +56,19 @@ class MattStackArrAll(Generic[T]):
         self._EMPTY = self._dtype()
         self._items[:] = self._EMPTY
         self._length = 0
+        self._first_type: Optional[Type] = None
 
     def push(self, item: T) -> None:
         """Adds an item to the top of the stack."""
 
-        if not isinstance(item, self._dtype):
-            raise TypeError("item should be of type " + str(self._dtype))
+        if self._dtype is object:
+            if self._first_type is None:
+                self._first_type = type(item)
+            elif type(item) is not self._first_type:
+                raise TypeError("item should be of type " + str(self._dtype))
+        else:
+            if not isinstance(item, self._dtype):
+                raise TypeError("item should be of type " + str(self._dtype))
 
         if self._length == len(self._items):
             self._expand()
@@ -110,6 +117,8 @@ class MattStackArrAll(Generic[T]):
 # ----- QUEUE IMPLEMENTATIONS ----- #
 # LINKED LIST NODE
 class Node:
+    """A node in a singly linked list."""
+
     def __init__(self, value):
         self.value = value
         self.next = None
@@ -121,9 +130,16 @@ class MattQueueLink(Generic[T]):
         self.head = None
         self.tail = None
 
+        self._first_type: Optional[Type] = None
+
     def enqueue(self, item: T) -> None:
-        if not self.is_empty() and type(self.peek()) != type(item):
-            raise ValueError("Too Many Types")
+        """Add an item to the end of the queue."""
+
+        if self._first_type is None:
+            self._first_type = type(item)
+
+        if not self.is_empty() and not isinstance(item, type(self.peek())):
+            raise TypeError("item should be of type " + str(self._first_type))
 
         new_node = Node(item)
         if self.tail is None:
@@ -132,7 +148,8 @@ class MattQueueLink(Generic[T]):
             self.tail.next = new_node
             self.tail = new_node
 
-    def dequeue(self) -> Optional[T]:
+    def dequeue(self) -> T:
+        """Remove and return the item at the front of the queue."""
         if self.head is None:
             raise ValueError("Empty")
         value = self.head.value
@@ -141,7 +158,8 @@ class MattQueueLink(Generic[T]):
             self.tail = None
         return value
 
-    def peek(self) -> Optional[T]:
+    def peek(self) -> T:
+        """Return the front item without removing it."""
         if self.head is None:
             raise ValueError("Empty")
         return self.head.value
@@ -164,9 +182,15 @@ class MattQueueLinkX2(Generic[T]):
         self.head = None
         self.tail = None
 
+        self._first_type: Optional[Type] = None
+
     def enqueue(self, item: T) -> None:
-        if not self.is_empty() and type(self.peek()) != type(item):
-            raise ValueError("Too Many Types")
+
+        if self._first_type is None:
+            self._first_type = type(item)
+
+        if not self.is_empty() and not isinstance(item, type(self.peek())):
+            raise TypeError("item should be of type " + str(self._first_type))
 
         new_node = NodeX2(item)
         if self.tail is None:
@@ -176,7 +200,7 @@ class MattQueueLinkX2(Generic[T]):
             self.tail.next = new_node
             self.tail = new_node
 
-    def dequeue(self) -> Optional[T]:
+    def dequeue(self) -> T:
         if self.head is None:
             raise ValueError("Empty")
         value = self.head.value
@@ -187,10 +211,15 @@ class MattQueueLinkX2(Generic[T]):
             self.head.prev = None
         return value
 
-    def peek(self) -> Optional[T]:
+    def peek(self) -> T:
         if self.head is None:
             raise ValueError("Empty")
         return self.head.value
 
     def is_empty(self) -> bool:
         return self.head is None
+
+if __name__ == "__main__":
+    ms = MattQueueLink()
+    ms.enqueue(1)
+    

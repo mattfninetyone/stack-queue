@@ -2,11 +2,13 @@ from main import Stack, Queue, MattQueueLink, MattStackArrAll, MattQueueLinkX2
 import pytest
 import math
 
+data_type = object
+
 
 # FIXTURES
 @pytest.fixture
 def stack() -> Stack:
-    return MattStackArrAll(object)
+    return MattStackArrAll(data_type)
 
 
 @pytest.fixture
@@ -78,16 +80,16 @@ def test_stack_value_error(stack):
     with pytest.raises(ValueError) as e2:
         stack.peek()
 
-    assert str(e1.value) == "Empty"
-    assert str(e2.value) == "Empty"
+    assert str(e1.value) == "Stack is empty"
+    assert str(e2.value) == "Stack is empty"
 
 
 # ONE TYPE PER STACK
 def test_stack_one_type(stack):
     stack.push(1)
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(TypeError) as e:
         stack.push("")
-    assert str(e.value) == "Too Many Types"
+    assert str(e.value) == "item should be of type " + str(data_type)
 
 
 # PEEK IDEMPOTENCE CASE
@@ -180,9 +182,9 @@ def test_queue_any_as_input(QImp):
 def test_queue_one_type(QImp):
     queue = QImp()
     queue.enqueue(1)
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(TypeError) as e:
         queue.enqueue("")
-    assert str(e.value) == "Too Many Types"
+    assert str(e.value) == "item should be of type " + str(queue._first_type)
 
 
 # HEAD, TAIL, PREV CASES
