@@ -70,13 +70,6 @@ def test_stack_value_error(stack):
     assert str(e1.value) == "Empty"
     assert str(e2.value) == "Empty"
 
-# ALL TYPE CASE
-def test_stack_any_as_input(stack):
-    for item in [0, False, "", None]:
-        stack.push(item)
-        assert not stack.is_empty()
-        assert stack.pop() is item
-
 # ONE TYPE PER STACK
 def test_stack_one_type(stack):
     stack.push(1)

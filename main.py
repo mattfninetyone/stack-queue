@@ -1,4 +1,4 @@
-from typing import Protocol, TypeVar, Optional, Generic
+from typing import Protocol, TypeVar, Optional, Generic, Type
 import numpy as np
 
 T = TypeVar("T")
@@ -46,39 +46,39 @@ class Queue(Protocol[T]):
 
 class MattStackArrAll(Generic[T]):
 
-    _EMPTY = object()
-
-    def __init__(self, dt: object) -> None:
-        self._dtype = np.dtype(dt)
-        self._items = np.empty(2, dtype=object)
+    def __init__(self, dtype: Type) -> None:
+        self._dtype = dtype
+        self._items = np.empty(2, dtype=dtype)
+        self._EMPTY = dtype()
         self._items[:] = self._EMPTY
         self._length = 0
 
     def push(self, item: T) -> None:
+        # now caching length for reuse during call
+        n = self._length
+
         # Ensuring Type Consistency
-        if not self.is_empty() and not isinstance(item, type(self.peek())):
+        if not isinstance(item, self._dtype):
             raise ValueError("Too Many Types")
         
+        if not self.is_empty() and not isinstance(item, type(self.peek())):
+            raise ValueError("Too Many Types")
+            
         # Allocating more space
-        if self._items[-1] is not self._EMPTY:
+        if n == len(self._items):
             # Creating an empty array of the required size
             old_items = self._items
             old_size = len(old_items)
             new_size = old_size * 2 
             new_items = [self._EMPTY] * new_size
-
             # Reallocating old pushes
             new_items[:old_size] = old_items
-
             # Re-defining _items with new space
             self._items = new_items
-
         # Adding the item
-        idx = len(self)
-        self._items[idx] = item
-
+        self._items[n] = item
         # Updating array size tracker
-        self._length += 1
+        self._length = n + 1
         
     def pop(self) -> Optional[T]:
         if self.is_empty():
@@ -100,7 +100,7 @@ class MattStackArrAll(Generic[T]):
     def __len__(self) -> int:
         return self._length
 
-# ----- QUEUE AND NODE IMPLEMENTATIONS ------ #
+# ----- QUEUE IMPLEMENTATIONS ----- #
 # LINKED LIST NODE
 class Node:
     def __init__(self, value):
@@ -148,7 +148,7 @@ class NodeX2:
         self.value = value
         self.next = None
         self.prev = None
-
+        
 # DBL LINKED LIST
 class MattQueueLinkX2(Generic[T]):
 
@@ -186,4 +186,7 @@ class MattQueueLinkX2(Generic[T]):
 
     def is_empty(self) -> bool:
         return self.head is None
+
+
+
 
