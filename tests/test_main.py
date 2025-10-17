@@ -2,20 +2,25 @@ from main import Stack, Queue, MattQueueLink, MattStackArrAll, MattQueueLinkX2
 import pytest
 import math
 
+
 # FIXTURES
 @pytest.fixture
 def stack() -> Stack:
     return MattStackArrAll(object)
 
+
 @pytest.fixture
 def queue() -> Queue:
     return MattQueueLink()
+
 
 @pytest.fixture
 def queue_v2() -> Queue:
     return MattQueueLinkX2()
 
+
 # ----- STACK TESTS ----- #
+
 
 # BASIC FUNCTIONALITY CASES
 def test_stack_push(stack):
@@ -27,12 +32,14 @@ def test_stack_push(stack):
     assert not stack.is_empty()
     assert stack.peek() == item
 
+
 def test_stack_pop(stack):
     item = 12
     stack.push(item)
     popped_item = stack.pop()
     assert popped_item == item
     assert stack.is_empty()
+
 
 def test_stack_peek(stack):
     item = 12
@@ -41,8 +48,10 @@ def test_stack_peek(stack):
     assert top_item == item
     assert not stack.is_empty()
 
+
 def test_stack_is_empty(stack):
     assert stack.is_empty()
+
 
 # HANDLING MULTIPLE VALS
 def test_stack_multi_push(stack):
@@ -50,6 +59,7 @@ def test_stack_multi_push(stack):
         stack.push(i)
     for i in reversed(range(10)):
         assert stack.pop() == i
+
 
 # BOUNDARY GROWTH CASE
 def test_stack_grow(stack):
@@ -59,6 +69,7 @@ def test_stack_grow(stack):
     assert stack.peek() == val
     assert stack.pop() == val
     assert len(stack) == (2 ** (max(1, math.ceil(math.log2(val)))))
+
 
 # VALUE ERROR ON EMPTY POP/PEEK CASE
 def test_stack_value_error(stack):
@@ -70,6 +81,7 @@ def test_stack_value_error(stack):
     assert str(e1.value) == "Empty"
     assert str(e2.value) == "Empty"
 
+
 # ONE TYPE PER STACK
 def test_stack_one_type(stack):
     stack.push(1)
@@ -77,16 +89,19 @@ def test_stack_one_type(stack):
         stack.push("")
     assert str(e.value) == "Too Many Types"
 
+
 # PEEK IDEMPOTENCE CASE
 def test_peek_idempotent(stack):
     stack.push(1)
     assert stack.peek()
     assert stack.peek()
 
+
 # ----- QUEUE TESTS ----- #
 
 # PARAMETERISE CLASS OBJECTS
 models = [MattQueueLink, MattQueueLinkX2]
+
 
 # BASIC FUNCTIONALITY CASES
 @pytest.mark.parametrize("QImp", models)
@@ -100,6 +115,7 @@ def test_queue_enqueue(QImp):
     assert not queue.is_empty()
     assert queue.peek() == item
 
+
 @pytest.mark.parametrize("QImp", models)
 def test_queue_dequeue(QImp):
     queue = QImp()
@@ -108,6 +124,7 @@ def test_queue_dequeue(QImp):
     dequeued_item = queue.dequeue()
     assert dequeued_item == item
     assert queue.is_empty()
+
 
 @pytest.mark.parametrize("QImp", models)
 def test_queue_peek(QImp):
@@ -118,10 +135,12 @@ def test_queue_peek(QImp):
     assert front_item == item
     assert not queue.is_empty()
 
+
 @pytest.mark.parametrize("QImp", models)
 def test_queue_is_empty(QImp):
     queue = QImp()
     assert queue.is_empty()
+
 
 # HANDLING MULTIPLE VALS
 @pytest.mark.parametrize("QImp", models)
@@ -131,6 +150,7 @@ def test_queue_multi_push(QImp):
         queue.enqueue(i)
     for i in range(10):
         assert queue.dequeue() == i
+
 
 # VALUE ERROR ON EMPTY DEQUEUE/PEEK CASE
 @pytest.mark.parametrize("QImp", models)
@@ -144,6 +164,7 @@ def test_queue_value_error(QImp):
     assert str(e1.value) == "Empty"
     assert str(e2.value) == "Empty"
 
+
 # ALL TYPE CASE
 @pytest.mark.parametrize("QImp", models)
 def test_queue_any_as_input(QImp):
@@ -152,6 +173,7 @@ def test_queue_any_as_input(QImp):
         queue.enqueue(item)
         assert not queue.is_empty()
         assert queue.dequeue() is item
+
 
 # ONE TYPE PER QUEUE
 @pytest.mark.parametrize("QImp", models)
@@ -162,14 +184,16 @@ def test_queue_one_type(QImp):
         queue.enqueue("")
     assert str(e.value) == "Too Many Types"
 
+
 # HEAD, TAIL, PREV CASES
 @pytest.mark.parametrize("QImp", models)
 def test_head_tail_empty(QImp):
-    queue = QImp() 
+    queue = QImp()
     queue.enqueue(1)
     assert queue.dequeue() == 1
     assert queue.head is None
     assert queue.tail is None
+
 
 # DBL LINK LIST FORWARD, BACKWARD, HEAD NONE CASE
 def test_double_link_next_prev(queue_v2):
@@ -184,16 +208,3 @@ def test_double_link_next_prev(queue_v2):
     assert queue_v2.tail.prev.prev.value == num - 2
     assert queue_v2.dequeue() == 0
     assert queue_v2.head.prev is None
-
-
-
-
-
-
-
-
-
-
-
-
-
