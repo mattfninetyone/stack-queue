@@ -13,11 +13,11 @@ class Stack(Protocol[T]):
         """Add an item to the top of the stack."""
         ...
 
-    def pop(self) -> Optional[T]:
+    def pop(self) -> T:
         """Remove and return the top item from the stack."""
         ...
 
-    def peek(self) -> Optional[T]:
+    def peek(self) -> T:
         """Return the top item without removing it."""
         ...
 
@@ -50,10 +50,10 @@ class Queue(Protocol[T]):
 
 
 class MattStackArrAll(Generic[T]):
-    def __init__(self, dtype: Type[T]) -> None:
-        self._dtype = dtype
-        self._items = np.empty(2, dtype=dtype)
-        self._EMPTY = dtype()
+    def __init__(self, dtype: Type[T] | None = None) -> None:
+        self._dtype = dtype or object
+        self._items = np.empty(2, dtype=self._dtype)
+        self._EMPTY = self._dtype()
         self._items[:] = self._EMPTY
         self._length = 0
 
@@ -92,7 +92,7 @@ class MattStackArrAll(Generic[T]):
         self._length -= 1
         return popped_value
 
-    def peek(self) -> Optional[T]:
+    def peek(self) -> T:
         """Returns the top item without removing it."""
 
         if self.is_empty():
