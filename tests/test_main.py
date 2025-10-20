@@ -1,12 +1,17 @@
-from main import Stack, Queue, MattQueueLink, MattStackArrAll, MattQueueLinkX2
-import pytest
 import math
+
+import numpy as np
+import pytest
+
+from main import MattQueueLink, MattQueueLinkX2, MattStackArrAll, Queue, Stack
+
+data_type = object
 
 
 # FIXTURES
 @pytest.fixture
 def stack() -> Stack:
-    return MattStackArrAll(object)
+    return MattStackArrAll()
 
 
 @pytest.fixture
@@ -22,7 +27,6 @@ def queue_v2() -> Queue:
 # ----- STACK TESTS ----- #
 
 
-# BASIC FUNCTIONALITY CASES
 def test_stack_push(stack):
     # Arrange
     item = 12
@@ -53,7 +57,6 @@ def test_stack_is_empty(stack):
     assert stack.is_empty()
 
 
-# HANDLING MULTIPLE VALS
 def test_stack_multi_push(stack):
     for i in range(10):
         stack.push(i)
@@ -61,7 +64,6 @@ def test_stack_multi_push(stack):
         assert stack.pop() == i
 
 
-# BOUNDARY GROWTH CASE
 def test_stack_grow(stack):
     val = 8
     for i in range(val + 1):
@@ -71,26 +73,24 @@ def test_stack_grow(stack):
     assert len(stack) == (2 ** (max(1, math.ceil(math.log2(val)))))
 
 
-# VALUE ERROR ON EMPTY POP/PEEK CASE
 def test_stack_value_error(stack):
     with pytest.raises(ValueError) as e1:
         stack.pop()
     with pytest.raises(ValueError) as e2:
         stack.peek()
 
-    assert str(e1.value) == "Empty"
-    assert str(e2.value) == "Empty"
+    assert str(e1.value) == "Stack is empty"
+    assert str(e2.value) == "Stack is empty"
 
 
-# ONE TYPE PER STACK
-def test_stack_one_type(stack):
-    stack.push(1)
-    with pytest.raises(ValueError) as e:
+def test_stack_one_type():
+    stack = MattStackArrAll(np.int64)
+    stack.push(np.int64(1))
+    with pytest.raises(TypeError) as e:
         stack.push("")
-    assert str(e.value) == "Too Many Types"
+    assert str(e.value) == "item should be of type <class 'numpy.int64'>"
 
 
-# PEEK IDEMPOTENCE CASE
 def test_peek_idempotent(stack):
     stack.push(1)
     assert stack.peek()
@@ -99,11 +99,9 @@ def test_peek_idempotent(stack):
 
 # ----- QUEUE TESTS ----- #
 
-# PARAMETERISE CLASS OBJECTS
 models = [MattQueueLink, MattQueueLinkX2]
 
 
-# BASIC FUNCTIONALITY CASES
 @pytest.mark.parametrize("QImp", models)
 def test_queue_enqueue(QImp):
     queue = QImp()
@@ -142,7 +140,6 @@ def test_queue_is_empty(QImp):
     assert queue.is_empty()
 
 
-# HANDLING MULTIPLE VALS
 @pytest.mark.parametrize("QImp", models)
 def test_queue_multi_push(QImp):
     queue = QImp()
@@ -152,7 +149,6 @@ def test_queue_multi_push(QImp):
         assert queue.dequeue() == i
 
 
-# VALUE ERROR ON EMPTY DEQUEUE/PEEK CASE
 @pytest.mark.parametrize("QImp", models)
 def test_queue_value_error(QImp):
     queue = QImp()
@@ -165,7 +161,6 @@ def test_queue_value_error(QImp):
     assert str(e2.value) == "Empty"
 
 
-# ALL TYPE CASE
 @pytest.mark.parametrize("QImp", models)
 def test_queue_any_as_input(QImp):
     queue = QImp()
@@ -175,17 +170,15 @@ def test_queue_any_as_input(QImp):
         assert queue.dequeue() is item
 
 
-# ONE TYPE PER QUEUE
 @pytest.mark.parametrize("QImp", models)
 def test_queue_one_type(QImp):
     queue = QImp()
-    queue.enqueue(1)
-    with pytest.raises(ValueError) as e:
+    queue.enqueue(np.int64(1))
+    with pytest.raises(TypeError) as e:
         queue.enqueue("")
-    assert str(e.value) == "Too Many Types"
+    assert str(e.value) == "item should be of one type"
 
 
-# HEAD, TAIL, PREV CASES
 @pytest.mark.parametrize("QImp", models)
 def test_head_tail_empty(QImp):
     queue = QImp()
@@ -195,7 +188,6 @@ def test_head_tail_empty(QImp):
     assert queue.tail is None
 
 
-# DBL LINK LIST FORWARD, BACKWARD, HEAD NONE CASE
 def test_double_link_next_prev(queue_v2):
     num = 100
     for i in range(num + 1):

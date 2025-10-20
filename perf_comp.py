@@ -1,6 +1,7 @@
 import time
 
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
 
 from main import MattQueueLink, MattQueueLinkX2, MattStackArrAll
 
@@ -52,10 +53,15 @@ def run_performance_tests(num_operations: int) -> dict[str, tuple[list, list]]:
 
 
 def plot_results(results: dict[str, tuple[list, list]]) -> None:
-    for name, (vals, times) in results.items():
-        plt.plot(vals, times, label=name)
+    colors = ["#FFC267", "#1AA7E9", "#BEB7B7"]
+    for (name, (vals, times)), color in zip(results.items(), colors):
+        plt.plot(vals, times, label=name, color=color, linewidth=2, alpha=0.8)
     plt.title("Performance Comparison: Push/Enqueue Operations")
     plt.xlabel("Number of Operations")
+    ax = plt.gca()
+    ax.xaxis.set_major_formatter(
+        mticker.FuncFormatter(lambda x, _: f"{x / 1_000_000:.1f}M")
+    )
     plt.ylabel("Cumulative Time (seconds)")
     plt.legend()
     plt.grid(True)
