@@ -1,9 +1,11 @@
 # Implementation of Stack and Queue Data Structures.
 
+![Performance Plot](images/perf_plot.png)
+
 ### Overview 
 - This project provides implementations of stack and queue data structures using various underlying data structures such as a numpy based array for a stack, and singly and doubly linked lists for queues.
 - The implementations are designed to be generic, allowing them to store any data type.
-- The code includes protocols to define the expected behavior of stacks and queues, ensuring that any implementation adheres to a consistent interface.
+- The code includes protocols to define the expected behaviour of stacks and queues, ensuring that any implementation adheres to a consistent interface.
 
 ### Features
 - **Stack Implementation**: A stack data structure using a numpy array, supporting standard operations like push, pop, and checking if the stack is empty. The assumption of using an array includes resizing when the stack is full (expected array behaviour).
@@ -11,7 +13,7 @@
   - A queue using a singly linked list.
   - A queue using a doubly linked list.
   - Both queue implementations support standard operations like enqueue, dequeue, and checking if the queue is empty.
-  - Both are built using a separate ode class to assign values and pointers.
+  - Both are built using a separate node class to assign values and pointers.
 - **Type Safety**: Utilises Python's typing module to ensure type safety and clarity in the code.
 - **Protocols**: Defines protocols for stacks and queues to enforce a consistent interface across different implementations.
 
@@ -24,11 +26,11 @@
             - Test that pop removes and returns the last item added to the stack.
             - Test that you can look at the top item of the stack without removing it.
             - Test that is_empty returns True when the stack is empty and False otherwise.
+            
         - Additional Stack Tests:
             - Test that adding multiple items works correctly.
             - Tests that the array resizes correctly when the stack exceeds its initial capacity.
-            - Test that popping or peeking at an empty stack raises an ValueError.
-            - Test that the stack can store different data types (e.g., integers, strings).
+            - Test that popping or peeking at an empty stack raises a ValueError.
             - Tests that the stack cannot store a mix of data types.
             - Test that peek maintains idempotency (multiple calls return the same result without modifying the stack).
 

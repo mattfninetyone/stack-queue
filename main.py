@@ -115,8 +115,9 @@ class MattStackArrAll(Generic[T]):
 
 
 # ----- QUEUE IMPLEMENTATIONS ----- #
-# LINKED LIST NODE
-class Node:
+
+
+class NodeSingle:
     """A node in a singly linked list."""
 
     def __init__(self, value):
@@ -124,7 +125,6 @@ class Node:
         self.next = None
 
 
-# LINKED LIST
 class MattQueueLink(Generic[T]):
     def __init__(self) -> None:
         self.head = None
@@ -141,7 +141,8 @@ class MattQueueLink(Generic[T]):
         if not self.is_empty() and not isinstance(item, type(self.peek())):
             raise TypeError("item should be of type " + str(self._first_type))
 
-        new_node = Node(item)
+        new_node = NodeSingle(item)
+
         if self.tail is None:
             self.head = self.tail = new_node
         else:
@@ -150,41 +151,46 @@ class MattQueueLink(Generic[T]):
 
     def dequeue(self) -> T:
         """Remove and return the item at the front of the queue."""
+
         if self.head is None:
             raise ValueError("Empty")
+
         value = self.head.value
         self.head = self.head.next
+
         if self.head is None:
             self.tail = None
         return value
 
     def peek(self) -> T:
         """Return the front item without removing it."""
+
         if self.head is None:
             raise ValueError("Empty")
+
         return self.head.value
 
     def is_empty(self) -> bool:
         return self.head is None
 
 
-# DBL LINKED LIST NODE
-class NodeX2:
+class NodeDouble:
+    """A node in a doubly linked list."""
+
     def __init__(self, value):
         self.value = value
         self.next = None
         self.prev = None
 
 
-# DBL LINKED LIST
 class MattQueueLinkX2(Generic[T]):
     def __init__(self) -> None:
         self.head = None
         self.tail = None
-
         self._first_type: Optional[Type] = None
 
     def enqueue(self, item: T) -> None:
+        """Add an item to the end of the queue."""
 
         if self._first_type is None:
             self._first_type = type(item)
@@ -192,7 +198,8 @@ class MattQueueLinkX2(Generic[T]):
         if not self.is_empty() and not isinstance(item, type(self.peek())):
             raise TypeError("item should be of type " + str(self._first_type))
 
-        new_node = NodeX2(item)
+        new_node = NodeDouble(item)
+
         if self.tail is None:
             self.head = self.tail = new_node
         else:
@@ -201,25 +208,28 @@ class MattQueueLinkX2(Generic[T]):
             self.tail = new_node
 
     def dequeue(self) -> T:
+        """Remove and return the item at the front of the queue."""
+
         if self.head is None:
             raise ValueError("Empty")
+
         value = self.head.value
         self.head = self.head.next
+
         if self.head is None:
             self.tail = None
         else:
             self.head.prev = None
+
         return value
 
     def peek(self) -> T:
+        """Return the front item without removing it."""
+
         if self.head is None:
             raise ValueError("Empty")
+
         return self.head.value
 
     def is_empty(self) -> bool:
         return self.head is None
-
-if __name__ == "__main__":
-    ms = MattQueueLink()
-    ms.enqueue(1)
-    
