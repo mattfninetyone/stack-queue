@@ -56,19 +56,12 @@ class MattStackArrAll(Generic[T]):
         self._EMPTY = self._dtype()
         self._items[:] = self._EMPTY
         self._length = 0
-        self._first_type: Optional[Type] = None
 
     def push(self, item: T) -> None:
         """Adds an item to the top of the stack."""
 
-        if self._dtype is object:
-            if self._first_type is None:
-                self._first_type = type(item)
-            elif type(item) is not self._first_type:
-                raise TypeError("item should be of type " + str(self._dtype))
-        else:
-            if not isinstance(item, self._dtype):
-                raise TypeError("item should be of type " + str(self._dtype))
+        if not isinstance(item, self._dtype):
+            raise TypeError("item should be of type " + str(self._dtype))
 
         if self._length == len(self._items):
             self._expand()
