@@ -1,6 +1,9 @@
-from main import Stack, Queue, MattQueueLink, MattStackArrAll, MattQueueLinkX2
-import pytest
 import math
+
+import numpy as np
+import pytest
+
+from main import MattQueueLink, MattQueueLinkX2, MattStackArrAll, Queue, Stack
 
 data_type = object
 
@@ -80,11 +83,12 @@ def test_stack_value_error(stack):
     assert str(e2.value) == "Stack is empty"
 
 
-def test_stack_one_type(stack):
-    stack.push(1)
+def test_stack_one_type():
+    stack = MattStackArrAll(np.int64)
+    stack.push(np.int64(1))
     with pytest.raises(TypeError) as e:
         stack.push("")
-    assert str(e.value) == "item should be of type " + str(data_type)
+    assert str(e.value) == "item should be of type <class 'numpy.int64'>"
 
 
 def test_peek_idempotent(stack):
@@ -169,10 +173,10 @@ def test_queue_any_as_input(QImp):
 @pytest.mark.parametrize("QImp", models)
 def test_queue_one_type(QImp):
     queue = QImp()
-    queue.enqueue(1)
+    queue.enqueue(np.int64(1))
     with pytest.raises(TypeError) as e:
         queue.enqueue("")
-    assert str(e.value) == "item should be of type " + str(queue._first_type)
+    assert str(e.value) == "item should be of one type"
 
 
 @pytest.mark.parametrize("QImp", models)
