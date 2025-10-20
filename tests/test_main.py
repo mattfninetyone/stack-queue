@@ -8,7 +8,7 @@ data_type = object
 # FIXTURES
 @pytest.fixture
 def stack() -> Stack:
-    return MattStackArrAll(data_type)
+    return MattStackArrAll()
 
 
 @pytest.fixture
