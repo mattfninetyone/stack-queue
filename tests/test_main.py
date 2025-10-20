@@ -33,6 +33,7 @@ def test_stack_push(stack):
     assert not stack.is_empty()
     assert stack.peek() == item
 
+
 def test_stack_pop(stack):
     item = 12
     stack.push(item)
@@ -40,12 +41,14 @@ def test_stack_pop(stack):
     assert popped_item == item
     assert stack.is_empty()
 
+
 def test_stack_peek(stack):
     item = 12
     stack.push(item)
     top_item = stack.peek()
     assert top_item == item
     assert not stack.is_empty()
+
 
 def test_stack_is_empty(stack):
     assert stack.is_empty()
@@ -57,6 +60,7 @@ def test_stack_multi_push(stack):
     for i in reversed(range(10)):
         assert stack.pop() == i
 
+
 def test_stack_grow(stack):
     val = 8
     for i in range(val + 1):
@@ -64,6 +68,7 @@ def test_stack_grow(stack):
     assert stack.peek() == val
     assert stack.pop() == val
     assert len(stack) == (2 ** (max(1, math.ceil(math.log2(val)))))
+
 
 def test_stack_value_error(stack):
     with pytest.raises(ValueError) as e1:
@@ -74,11 +79,13 @@ def test_stack_value_error(stack):
     assert str(e1.value) == "Stack is empty"
     assert str(e2.value) == "Stack is empty"
 
+
 def test_stack_one_type(stack):
     stack.push(1)
     with pytest.raises(TypeError) as e:
         stack.push("")
     assert str(e.value) == "item should be of type " + str(data_type)
+
 
 def test_peek_idempotent(stack):
     stack.push(1)
@@ -89,6 +96,7 @@ def test_peek_idempotent(stack):
 # ----- QUEUE TESTS ----- #
 
 models = [MattQueueLink, MattQueueLinkX2]
+
 
 @pytest.mark.parametrize("QImp", models)
 def test_queue_enqueue(QImp):
@@ -101,6 +109,7 @@ def test_queue_enqueue(QImp):
     assert not queue.is_empty()
     assert queue.peek() == item
 
+
 @pytest.mark.parametrize("QImp", models)
 def test_queue_dequeue(QImp):
     queue = QImp()
@@ -110,6 +119,7 @@ def test_queue_dequeue(QImp):
     assert dequeued_item == item
     assert queue.is_empty()
 
+
 @pytest.mark.parametrize("QImp", models)
 def test_queue_peek(QImp):
     queue = QImp()
@@ -118,6 +128,7 @@ def test_queue_peek(QImp):
     front_item = queue.peek()
     assert front_item == item
     assert not queue.is_empty()
+
 
 @pytest.mark.parametrize("QImp", models)
 def test_queue_is_empty(QImp):
@@ -133,6 +144,7 @@ def test_queue_multi_push(QImp):
     for i in range(10):
         assert queue.dequeue() == i
 
+
 @pytest.mark.parametrize("QImp", models)
 def test_queue_value_error(QImp):
     queue = QImp()
@@ -144,6 +156,7 @@ def test_queue_value_error(QImp):
     assert str(e1.value) == "Empty"
     assert str(e2.value) == "Empty"
 
+
 @pytest.mark.parametrize("QImp", models)
 def test_queue_any_as_input(QImp):
     queue = QImp()
@@ -151,6 +164,7 @@ def test_queue_any_as_input(QImp):
         queue.enqueue(item)
         assert not queue.is_empty()
         assert queue.dequeue() is item
+
 
 @pytest.mark.parametrize("QImp", models)
 def test_queue_one_type(QImp):
@@ -160,6 +174,7 @@ def test_queue_one_type(QImp):
         queue.enqueue("")
     assert str(e.value) == "item should be of type " + str(queue._first_type)
 
+
 @pytest.mark.parametrize("QImp", models)
 def test_head_tail_empty(QImp):
     queue = QImp()
@@ -167,6 +182,7 @@ def test_head_tail_empty(QImp):
     assert queue.dequeue() == 1
     assert queue.head is None
     assert queue.tail is None
+
 
 def test_double_link_next_prev(queue_v2):
     num = 100
